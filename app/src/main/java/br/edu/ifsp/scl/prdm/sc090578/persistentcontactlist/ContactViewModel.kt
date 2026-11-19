@@ -22,7 +22,6 @@ class ContactViewModel: ViewModel() {
     fun getContacts() {
         viewModelScope.launch {
             val result = ContactsApiClient.contactsApiService.getContacts()
-            result.
             result.body()?.let{ contacts ->
                 _contactList.update { contacts }
             }
@@ -33,10 +32,20 @@ class ContactViewModel: ViewModel() {
     private var nextId = 0
     fun saveContact(contact: Contact) {
         if (contact.id == INVALID_CONTACT_ID) {
-            _contactList.update{ it + contact.copy(id = nextId++)}
-        }
-        else {
-            _contactList.update { list -> list.map{ if (it.id == contact.id) contact else it } }
+            viewModelScope.launch {
+                val result = ContactsApiClient.contactsApiService.addContact(contact)
+                result.body()?.let { newContact ->
+                    _contactList.update { it + newContact }
+                }
+            }
+        } else {
+            viewModelScope.launch {
+                val result =
+                    ContactsApiClient.contactsApiService.replaceContact(contact.id, contact)
+                result.body()?.let { editedContact ->
+                    _contactList.update { list -> list.map { if (it.id == editedContact.id) editedContact else it } }
+                }
+            }
         }
     }
 
