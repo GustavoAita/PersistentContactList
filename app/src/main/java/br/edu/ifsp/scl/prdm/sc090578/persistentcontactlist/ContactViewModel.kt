@@ -1,13 +1,16 @@
 package br.edu.ifsp.scl.prdm.sc090578.persistentcontactlist
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import br.edu.ifsp.scl.prdm.sc090578.persistentcontactlist.model.Contact
 import br.edu.ifsp.scl.prdm.sc090578.persistentcontactlist.model.Contact.Companion.INVALID_CONTACT_ID
 import br.edu.ifsp.scl.prdm.sc090578.persistentcontactlist.model.Operation
+import br.edu.ifsp.scl.prdm.sc090578.persistentcontactlist.model.api.ContactsApiClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ContactViewModel: ViewModel() {
     private val _currentContact = MutableStateFlow(Contact())
@@ -15,6 +18,17 @@ class ContactViewModel: ViewModel() {
 
     private val _contactList: MutableStateFlow<List<Contact>> = MutableStateFlow(emptyList())
     val contactList: StateFlow<List<Contact>> = _contactList.asStateFlow()
+
+    fun getContacts() {
+        viewModelScope.launch {
+            val result = ContactsApiClient.contactsApiService.getContacts()
+            result.
+            result.body()?.let{ contacts ->
+                _contactList.update { contacts }
+            }
+        }
+
+    }
 
     private var nextId = 0
     fun saveContact(contact: Contact) {

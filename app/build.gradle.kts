@@ -55,4 +55,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.com.squareup.retrofit2.retrofit)
+    implementation(libs.com.squareup.retrofit2.converter.gson)
 }
