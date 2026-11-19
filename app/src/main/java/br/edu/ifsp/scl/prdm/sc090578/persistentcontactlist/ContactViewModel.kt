@@ -57,6 +57,12 @@ class ContactViewModel: ViewModel() {
     }
 
     fun removeContact(contact: Contact) {
+        viewModelScope.launch {
+            val result = ContactsApiClient.contactsApiService.removeContact(contact.id)
+            result.body()?.let { removeContact ->
+                _contactList.update { list -> list.filterNot { if (it.id == removeContact.id) } }
+            }
+        }
         _contactList.update { list -> list.filterNot { it.id == contact.id} }
     }
 }
